@@ -6,29 +6,26 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { nixpkgs, flake-utils, self }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        pname = "setpaper";
-        version = "0.1.0";
+        usage = ''
+        '';
+        script = import ./main.sh;
       in
       {
+        devShell = pkgs.mkShell {
+          buildInputs = [ ];
+        };
+        packages.default = self.packages.${system}.setpaper;
         packages.setpaper = pkgs.stdenvNoCC.mkDerivation {
-          inherit pname version;
           src = ./.;
-          buildInputs = [ pkgs.bun ];
-          buildPhase = ''
-            bun build . --compile --outfile ./setpaper
-          '';
+          name = "setpaper";
           installPhase = ''
             mkdir -p $out/bin
-            cp ./setpaper $out/bin
+            cp ${script} $out/bin/setpaper
           '';
-        };
-        packages.default = self.packages.x86_64-linux.setpaper;
-        devShell = pkgs.mkShell {
-          buildInputs = with pkgs; [ bun ];
         };
       });
 }

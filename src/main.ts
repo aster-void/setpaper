@@ -41,14 +41,20 @@ const abs_path = isAbsolute(positionals[0])
 	}
 }
 
-await $`
-#!/usr/bin/env bash
-
-hyprctl hyprpaper preload "${abs_path}"
-hyprctl hyprpaper wallpaper ",${abs_path}"
-
-`;
-
 if (values.write) {
-	await $`ln -sf ${abs_path} ~/.config/wallpaper`;
+	await $`
+		#!/usr/bin/env bash
+
+		ln -sf ${abs_path} ~/.config/wallpaper
+		hyprctl hyprpaper unload ",~/.config/wallpaper"
+		hyprctl hyprpaper wallpaper ",~/.config/wallpaper"
+`;
+} else {
+	await $`
+		#!/usr/bin/env bash
+
+		hyprctl hyprpaper unload "${abs_path}"
+		hyprctl hyprpaper preload "${abs_path}"
+		hyprctl hyprpaper wallpaper ",${abs_path}"
+`;
 }

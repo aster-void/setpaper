@@ -10,21 +10,15 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        usage = ''
-        '';
-        script = import ./main.sh;
       in
       {
-        devShell = pkgs.mkShell {
-          buildInputs = [ ];
-        };
         packages.default = self.packages.${system}.setpaper;
         packages.setpaper = pkgs.stdenvNoCC.mkDerivation {
           src = ./.;
           name = "setpaper";
           installPhase = ''
             mkdir -p $out/bin
-            cp ${script} $out/bin/setpaper
+            cp ./main.sh $out/bin/setpaper
           '';
         };
       });
